@@ -33,4 +33,10 @@ public class PeliculaService {
         return peliculaRepository.finByNombreSala(nombreSala);
     }
 
+
+    //ELIMINACION LOGICA
+    public void remove(Integer idPelicula){
+        peliculaRepository.deleteById(idPelicula);
+    }
+
 }

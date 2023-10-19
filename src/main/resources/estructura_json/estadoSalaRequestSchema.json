@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "q": {
+      "type": "string",
+      "description": "Nombre de la sala de cine"
+    }
+  },
+  "required":["q"]
+}

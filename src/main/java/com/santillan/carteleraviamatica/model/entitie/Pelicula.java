@@ -3,16 +3,22 @@ package com.santillan.carteleraviamatica.model.entitie;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.Collection;
 import java.util.Objects;
 
 @Entity
+@Table(name = "pelicula", schema = "cartelera_db", catalog = "")
+@SQLDelete(sql = "UPDATE sala_cine SET deleted = true WHERE id_sala=?")
+@Where(clause = "deleted=false")
 public class Pelicula {
     private Integer idPelicula;
     private String nombre;
     private Integer duracion;
     private Collection<PeliculaSalacine> peliculaSalacinesByIdPelicula;
+    private boolean deleted = Boolean.FALSE;
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -44,6 +50,11 @@ public class Pelicula {
     public void setDuracion(Integer duracion) {
         this.duracion = duracion;
     }
+
+    @Basic
+    @Column(name = "deleted")
+    public Boolean getDeleted(){ return deleted;}
+    public void setDeleted(Boolean deleted){this.deleted = deleted;}
 
     @Override
     public boolean equals(Object o) {

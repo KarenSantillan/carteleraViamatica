@@ -1,18 +1,23 @@
 package com.santillan.carteleraviamatica.model.entitie;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.sql.Date;
 import java.util.Objects;
 
 @Entity
 @Table(name = "pelicula_salacine", schema = "cartelera_db", catalog = "")
+@SQLDelete(sql = "UPDATE sala_cine SET deleted = true WHERE id_sala=?")
+@Where(clause = "deleted=false")
 public class PeliculaSalacine {
     private Integer idPeliculaSala;
     private Date fechaPublicacion;
     private Date fechaFin;
    // private Integer idSala;
     //private Integer idPelicula;
+   private boolean deleted = Boolean.FALSE;
     private SalaCine salaCineByIdSala;
     private Pelicula peliculaByIdPelicula;
 
@@ -46,6 +51,11 @@ public class PeliculaSalacine {
     public void setFechaFin(Date fechaFin) {
         this.fechaFin = fechaFin;
     }
+
+    @Basic
+    @Column(name = "deleted")
+    public Boolean getDeleted(){ return deleted;}
+    public void setDeleted(Boolean deleted){this.deleted = deleted;}
 /*
     @Basic
     @Column(name = "id_sala", nullable = true)

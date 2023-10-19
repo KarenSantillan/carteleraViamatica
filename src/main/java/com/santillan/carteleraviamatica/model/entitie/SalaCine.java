@@ -1,16 +1,21 @@
 package com.santillan.carteleraviamatica.model.entitie;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.Collection;
 import java.util.Objects;
 
 @Entity
 @Table(name = "sala_cine", schema = "cartelera_db", catalog = "")
+@SQLDelete(sql = "UPDATE sala_cine SET deleted = true WHERE id_sala=?")
+@Where(clause = "deleted=false")
 public class SalaCine {
     private Integer idSala;
     private String nombre;
     private Integer estado;
+    private boolean deleted = Boolean.FALSE;
     private Collection<PeliculaSalacine> peliculaSalacinesByIdSala;
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +48,11 @@ public class SalaCine {
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
+
+    @Basic
+    @Column(name = "deleted")
+    public Boolean getDeleted(){ return deleted;}
+    public void setDeleted(Boolean deleted){this.deleted = deleted;}
 
     @Override
     public boolean equals(Object o) {

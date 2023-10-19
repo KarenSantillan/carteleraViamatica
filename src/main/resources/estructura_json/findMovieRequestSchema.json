@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "properties": {
+    "q": {
+      "type": "string",
+      "description": "Nombre de la película a buscar"
+    },
+    "s": {
+      "type": "integer",
+      "description": "ID de la sala de cine"
+    }
+  },
+  "required":["q","s"]
+}

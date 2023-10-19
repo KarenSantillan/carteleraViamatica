@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "q": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha de publicación de la película (en formato ISO8601, ej. 'YYYY-MM-DD')"
+    }
+  },
+  "required":["q"]
+}
