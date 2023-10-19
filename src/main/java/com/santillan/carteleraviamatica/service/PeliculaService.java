@@ -33,6 +33,10 @@ public class PeliculaService {
         return peliculaRepository.finByNombreSala(nombreSala);
     }
 
+    //CREACION COMO PRUEBA
+    public Pelicula createMovie(Pelicula pelicula) {
+        return peliculaRepository.save(pelicula);
+    }
 
     //ELIMINACION LOGICA
     public void remove(Integer idPelicula){

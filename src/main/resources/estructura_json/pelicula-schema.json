@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "properties": {
+    "nombre": {
+      "type": "string",
+      "description": "Nombre de la pelicula"
+    },
+    "duracion": {
+      "type": "number",
+      "description": "Duracion de la pelicula"
+    }
+  },
+  "required": ["nombre", "duracion"]
+}

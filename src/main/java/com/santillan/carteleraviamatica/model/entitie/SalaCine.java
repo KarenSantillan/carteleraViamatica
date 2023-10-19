@@ -1,6 +1,10 @@
 package com.santillan.carteleraviamatica.model.entitie;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -8,51 +12,29 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Entity
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "sala_cine", schema = "cartelera_db", catalog = "")
 @SQLDelete(sql = "UPDATE sala_cine SET deleted = true WHERE id_sala=?")
 @Where(clause = "deleted=false")
 public class SalaCine {
-    private Integer idSala;
-    private String nombre;
-    private Integer estado;
-    private boolean deleted = Boolean.FALSE;
-    private Collection<PeliculaSalacine> peliculaSalacinesByIdSala;
-
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id_sala", nullable = false)
-    public Integer getIdSala() {
-        return idSala;
-    }
-
-    public void setIdSala(Integer idSala) {
-        this.idSala = idSala;
-    }
-
+    private Integer idSala;
     @Basic
     @Column(name = "nombre", nullable = false, length = 50)
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
+    private String nombre;
     @Basic
     @Column(name = "estado", nullable = false)
-    public Integer getEstado() {
-        return estado;
-    }
-
-    public void setEstado(Integer estado) {
-        this.estado = estado;
-    }
-
+    private Integer estado;
     @Basic
     @Column(name = "deleted")
-    public Boolean getDeleted(){ return deleted;}
-    public void setDeleted(Boolean deleted){this.deleted = deleted;}
+    private boolean deleted = Boolean.FALSE;
+    @OneToMany(mappedBy = "salaCineByIdSala")
+    private Collection<PeliculaSalacine> peliculaSalacinesByIdSala;
 
     @Override
     public boolean equals(Object o) {
@@ -67,12 +49,4 @@ public class SalaCine {
         return Objects.hash(idSala, nombre, estado);
     }
 
-    @OneToMany(mappedBy = "salaCineByIdSala")
-    public Collection<PeliculaSalacine> getPeliculaSalacinesByIdSala() {
-        return peliculaSalacinesByIdSala;
-    }
-
-    public void setPeliculaSalacinesByIdSala(Collection<PeliculaSalacine> peliculaSalacinesByIdSala) {
-        this.peliculaSalacinesByIdSala = peliculaSalacinesByIdSala;
-    }
 }

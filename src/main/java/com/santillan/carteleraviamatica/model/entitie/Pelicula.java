@@ -3,6 +3,11 @@ package com.santillan.carteleraviamatica.model.entitie;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.Internal;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -10,51 +15,30 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Entity
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "pelicula", schema = "cartelera_db", catalog = "")
-@SQLDelete(sql = "UPDATE sala_cine SET deleted = true WHERE id_sala=?")
+@SQLDelete(sql = "UPDATE pelicula SET deleted = true WHERE id_pelicula=?")
 @Where(clause = "deleted=false")
 public class Pelicula {
-    private Integer idPelicula;
-    private String nombre;
-    private Integer duracion;
-    private Collection<PeliculaSalacine> peliculaSalacinesByIdPelicula;
-    private boolean deleted = Boolean.FALSE;
-
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id_pelicula", nullable = false)
-    public Integer getIdPelicula() {
-        return idPelicula;
-    }
-
-    public void setIdPelicula(Integer idPelicula) {
-        this.idPelicula = idPelicula;
-    }
-
+    private Integer idPelicula;
     @Basic
     @Column(name = "nombre", nullable = false, length = 50)
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
+    private String nombre;
     @Basic
     @Column(name = "duracion", nullable = false)
-    public Integer getDuracion() {
-        return duracion;
-    }
-
-    public void setDuracion(Integer duracion) {
-        this.duracion = duracion;
-    }
-
+    private Integer duracion;
+    @OneToMany(mappedBy = "peliculaByIdPelicula")
+    @JsonIgnore
+    private Collection<PeliculaSalacine> peliculaSalacinesByIdPelicula;
     @Basic
     @Column(name = "deleted")
-    public Boolean getDeleted(){ return deleted;}
-    public void setDeleted(Boolean deleted){this.deleted = deleted;}
+    private boolean deleted = Boolean.FALSE;
 
     @Override
     public boolean equals(Object o) {
@@ -69,13 +53,4 @@ public class Pelicula {
         return Objects.hash(idPelicula, nombre, duracion);
     }
 
-    @OneToMany(mappedBy = "peliculaByIdPelicula")
-    @JsonIgnore
-    public Collection<PeliculaSalacine> getPeliculaSalacinesByIdPelicula() {
-        return peliculaSalacinesByIdPelicula;
-    }
-
-    public void setPeliculaSalacinesByIdPelicula(Collection<PeliculaSalacine> peliculaSalacinesByIdPelicula) {
-        this.peliculaSalacinesByIdPelicula = peliculaSalacinesByIdPelicula;
-    }
 }

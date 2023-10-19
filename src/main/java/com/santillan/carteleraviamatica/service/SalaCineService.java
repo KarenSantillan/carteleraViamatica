@@ -9,8 +9,8 @@ public class SalaCineService {
     @Autowired
     SalaCineRepository salaCineRepository;
     //ELIMINACION LOGICA
-    public void remove(Integer isSala){
-        salaCineRepository.deleteById(isSala);
+    public void remove(Integer idSala){
+        salaCineRepository.deleteById(idSala);
     }
 
 }
