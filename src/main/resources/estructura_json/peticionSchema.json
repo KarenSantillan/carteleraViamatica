@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "peticion": {
+      "type": "string",
+      "description": "Tipo de peticion a realizar"
+    },
+    "data": {
+      "type": "object",
+      "properties":{
+        "entidad": {
+          "type": "string",
+          "descripcion": "Entidad relacionada a la peticion"
+        }
+      },
+      "required": ["entidad"]
+    }
+  },
+  "required":["peticion", "data"]
+}
