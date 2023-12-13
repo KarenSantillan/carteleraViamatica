@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.santillan.carteleraviamatica.exceptions.ExceptionErrores;
 import com.santillan.carteleraviamatica.model.entitie.Pelicula;
 import com.santillan.carteleraviamatica.model.entitie.PeliculaSalacine;
 import com.santillan.carteleraviamatica.model.entitie.SalaCine;
@@ -35,7 +36,7 @@ public class GenericosService {
 //	PeliculaSalaCineRepository peliculasalacineRepository;
 
 
-	public RespuestaGeneral procesar(JSONObject jsonrequest) {
+	public RespuestaGeneral procesar(JSONObject jsonrequest) throws ExceptionErrores{
 		RespuestaGeneral respuesta = null;
 
 		if(jsonrequest.isNull("peticion")) {
@@ -63,24 +64,30 @@ public class GenericosService {
 
 		//String respuesta = null;
 
-		switch (casosPeticion) {
-			case "consultar":
-				String resultConsulta = consultar(peticionGeneral);
-				if (resultConsulta != null){
-					respuesta = new RespuestaGeneral("200", "Solictud procesada");
-					respuesta.getData().put("data", resultConsulta);
-				}else{
-					respuesta = new RespuestaGeneral("500", "Hubo un error en la consulta");
-				}
-				break;
-			default:
-				respuesta = new RespuestaGeneral("400", "No se reconoce la peticion ingresada");
+		try {
+			switch (casosPeticion) {
+				case "consultar":
+				String resultConsulta;
+					resultConsulta = consultar(peticionGeneral);
+					if (resultConsulta != null){
+						respuesta = new RespuestaGeneral("200", "Solictud procesada");
+						respuesta.getData().put("data", resultConsulta);
+					}else{
+						respuesta = new RespuestaGeneral("500", "Hubo un error en la consulta");
+					}
+					break;
+				default:
+					respuesta = new RespuestaGeneral("400", "No se reconoce la peticion ingresada");
+			}
+		} catch (ExceptionErrores e) {
+			// TODO Auto-generated catch block
+			throw new ExceptionErrores("01");
 		}
 
 		return respuesta;
 	}
 
-	private String consultar(PeticionGeneral peticion) {
+	private String consultar(PeticionGeneral peticion) throws ExceptionErrores{
 
 		String devolver = null;
 
@@ -89,7 +96,9 @@ public class GenericosService {
 			log.error("DATA VACIA");
 			return null;
 		}
-		String entidad = deserializaData.get("entidad") == null ? null : deserializaData.get("entidad").toString();
+	
+//		String entidad = deserializaData.get("entidad") == null ? null : deserializaData.get("entidad").toString();
+		String entidad = deserializaData.get("entidad").toString();
 		if(StringUtils.isNotEmpty(entidad)) {
 			switch (entidad) {
 			case "Pelicula":
@@ -106,7 +115,6 @@ public class GenericosService {
 			case "SalaCine":
 				List<SalaCine> lSalaCines = salacineRepository.findAll();
 				devolver = lSalaCines.toString();
-
 				break;
 
 			}

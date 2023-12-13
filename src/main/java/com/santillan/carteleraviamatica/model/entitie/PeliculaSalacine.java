@@ -16,9 +16,9 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "pelicula_salacine", schema = "cartelera_db", catalog = "")
-@SQLDelete(sql = "UPDATE pelicula_salacine SET deleted = true WHERE id_pelicula_sala=?")
-@Where(clause = "deleted=false")
+@Table(name = "pelicula_sala_cine")
+//@SQLDelete(sql = "UPDATE pelicula_salacine SET deleted = true WHERE id_pelicula_sala=?")
+//@Where(clause = "deleted=false")
 public class PeliculaSalacine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -31,10 +31,10 @@ public class PeliculaSalacine {
     @Column(name = "fecha_fin", nullable = true)
     private Date fechaFin;
    @Basic
-   @Column(name = "deleted")
-   private boolean deleted = Boolean.FALSE;
+   @Column(name = "estado")
+   private Character estado;
     @ManyToOne
-    @JoinColumn(name = "id_sala", referencedColumnName = "id_sala")
+    @JoinColumn(name = "id_sala_cine", referencedColumnName = "id_sala")
     private SalaCine salaCineByIdSala;
     @ManyToOne
     @JoinColumn(name = "id_pelicula", referencedColumnName = "id_pelicula")

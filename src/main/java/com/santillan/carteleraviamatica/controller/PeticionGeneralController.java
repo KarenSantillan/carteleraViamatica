@@ -1,7 +1,10 @@
 package com.santillan.carteleraviamatica.controller;
 
+import com.santillan.carteleraviamatica.exceptions.ExceptionErrores;
 import com.santillan.carteleraviamatica.model.entitie.generics.RespuestaGeneral;
 import com.santillan.carteleraviamatica.service.GenericosService;
+import com.santillan.carteleraviamatica.util.ExceptionUtils;
+
 import jakarta.validation.ValidationException;
 import org.apache.commons.io.IOUtils;
 import org.everit.json.schema.Schema;
@@ -9,6 +12,7 @@ import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -41,12 +47,13 @@ public class PeticionGeneralController {
 
 	private Schema peticionRequestSchema = SchemaLoader.load(new JSONObject(peticionSchemaJson));
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@PostMapping(path = "/peticion")
 	public ResponseEntity<RespuestaGeneral> procesarPeticion(@RequestBody String datos) {
 		//String response = null;
 		log.info("ENTRADA DE INFORMACION: " + datos);
 		JSONObject jsonReq = new JSONObject(datos);
-
+		
 		//validar con JSONSchema
 		try {
 			peticionRequestSchema.validate(jsonReq);
@@ -59,18 +66,26 @@ public class PeticionGeneralController {
 			return new ResponseEntity<>(rsp, sta);
 		}
 
-		RespuestaGeneral respuesta = genService.procesar(jsonReq);
-
-		if (respuesta == null){
-			respuesta = new RespuestaGeneral("500", "Se ha generado un error en el servicio");
+		RespuestaGeneral respuesta;
+		try {
+			respuesta = genService.procesar(jsonReq);
+			if (respuesta == null){
+				respuesta = new RespuestaGeneral("500", "Se ha generado un error en el servicio");
+			}
+			HttpStatus httpSta = HttpStatus.OK;
+			if(!"200".equals(respuesta.getCodigo())){
+				httpSta = HttpStatus.INTERNAL_SERVER_ERROR;
+				
+			}
+			return new ResponseEntity<>(respuesta, httpSta);
+		} catch (ExceptionErrores e) {
+			// TODO Auto-generated catch block
+			respuesta = new RespuestaGeneral("01", "NO SE HA PODIDO REALIZAR EL PROCESO", ExceptionUtils.manejoError(e.getCodError()));
+			
+			return new ResponseEntity(respuesta, HttpStatusCode.valueOf(500));
 		}
-		HttpStatus httpSta = HttpStatus.OK;
-		if(!"200".equals(respuesta.getCodigo())){
-			httpSta = HttpStatus.INTERNAL_SERVER_ERROR;
 
-		}
 
-		return new ResponseEntity<>(respuesta, httpSta);
 		/*Response = genService.procesar(jsonReq);
 		if(response == null) {
 			response = "SIN RESPUESTA DEL SERVICIO";
