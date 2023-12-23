@@ -1,24 +1,32 @@
 package com.santillan.carteleraviamatica.model.entitie;
 
-import jakarta.persistence.*;
+import java.util.Collection;
+import java.util.Objects;
+
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
-
-import java.util.Collection;
-import java.util.Objects;
 
 @Entity
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "sala_cine", schema = "cartelera_db", catalog = "")
-@SQLDelete(sql = "UPDATE sala_cine SET deleted = true WHERE id_sala=?")
-@Where(clause = "deleted=false")
+@Table(name = "sala_cine")
+//@SQLDelete(sql = "UPDATE sala_cine SET deleted = true WHERE id_sala=?")
+//@Where(clause = "deleted=false")
 public class SalaCine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -29,10 +37,10 @@ public class SalaCine {
     private String nombre;
     @Basic
     @Column(name = "estado", nullable = false)
-    private Integer estado;
-    @Basic
-    @Column(name = "deleted")
-    private boolean deleted = Boolean.FALSE;
+    private Character estado;
+//    @Basic
+//    @Column(name = "deleted")
+//    private boolean deleted = Boolean.FALSE;
     @OneToMany(mappedBy = "salaCineByIdSala")
     private Collection<PeliculaSalacine> peliculaSalacinesByIdSala;
 

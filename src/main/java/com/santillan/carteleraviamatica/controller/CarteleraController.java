@@ -1,27 +1,39 @@
 package com.santillan.carteleraviamatica.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.sql.Date;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+import org.everit.json.schema.Schema;
+import org.everit.json.schema.loader.SchemaLoader;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.santillan.carteleraviamatica.model.dto.DatePeliculaDTO;
 import com.santillan.carteleraviamatica.model.entitie.Pelicula;
 import com.santillan.carteleraviamatica.service.PeliculaSalacineService;
 import com.santillan.carteleraviamatica.service.PeliculaService;
 import com.santillan.carteleraviamatica.service.SalaCineService;
-import org.everit.json.schema.Schema;
-import org.everit.json.schema.loader.SchemaLoader;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+
 import jakarta.validation.ValidationException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Date;
-import java.util.List;
-import java.nio.charset.StandardCharsets;
-import org.apache.commons.io.IOUtils;
 
 
 
 @RestController
+@RequestMapping
 public class CarteleraController {
     @Autowired
     PeliculaService peliculaService;
@@ -132,10 +144,12 @@ public class CarteleraController {
     @GetMapping("/findMovie")
     public ResponseEntity<?> buscarPelicula(@RequestParam("q") String nombre, @RequestParam("s") Integer idSala) {
         // Validar la solicitud para /findMovie
+    	String jsonReqString = "{\"q\":\"" + nombre + "\",\"s\":" + idSala + "}";
+    	JSONObject jsonReq = new JSONObject(jsonReqString);
         try {
-            findMovieRequestSchema.validate(new JSONObject("{\"q\":\"" + nombre + "\",\"s\":" + idSala + "}"));
+            findMovieRequestSchema.validate(jsonReq);
         } catch (ValidationException e) {
-            return ResponseEntity.badRequest().body("La solicitud para /findMovie no cumple con el esquema JSON: " + e.getMessage());
+            return ResponseEntity.badRequest().body("La soliscitud para /findMovie no cumple con el esquema JSON: " + e.getMessage());
         }
 
         Pelicula pelicula = peliculaService.buscarPeliculaPorNombreYSala(nombre, idSala);
@@ -147,7 +161,8 @@ public class CarteleraController {
 
     }
 
-    @GetMapping("/movieByDate")
+    @SuppressWarnings("unused")
+	@GetMapping("/movieByDate")
     public ResponseEntity<?> peliculaPorFecha(@RequestParam("q")Date fechaPublicacion){
 
         // Validar la solicitud para /movieByDate
@@ -195,7 +210,7 @@ public class CarteleraController {
         }
     }
     //POST
-    @PostMapping ("/saveMovie")
+    @PostMapping (path="/saveMovie", consumes= MediaType.APPLICATION_JSON_VALUE, produces= MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createMovie(@RequestBody Pelicula movie) {
         // Validar la solicitud para /saveMovie
         try {
@@ -207,12 +222,6 @@ public class CarteleraController {
         } catch (ValidationException e) {
             return ResponseEntity.badRequest().body("La solicitud para /saveMovie no cumple con el esquema JSON: " + e.getMessage());
         }
-/*
-        try {
-            saveMovieRequestSchema.validate(new JSONObject("{\"nombre\":\"" + movie.getNombre() + "\",\"duracion\":" + movie.getDuracion() + "}"));
-        } catch (ValidationException e) {
-            return ResponseEntity.badRequest().body("La solicitud para /saveMovie no cumple con el esquema JSON: " + e.getMessage());
-        }*/
 
         peliculaService.createMovie(movie);
         return ResponseEntity.ok("Pelicula creada con éxito");

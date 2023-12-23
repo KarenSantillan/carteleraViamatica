@@ -10,5 +10,5 @@
       "description": "ID de la sala de cine"
     }
   },
-  "required":["q","s"]
+  "required":["q"]
 }
