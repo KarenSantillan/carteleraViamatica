@@ -32,6 +32,9 @@ public class PeliculaService {
     public List<Pelicula> finByNombreSala(String nombreSala){
         return peliculaRepository.finByNombreSala(nombreSala);
     }
+    //JWT
+    public Pelicula findMovieByNombre(String nombre){ return peliculaRepository.findByNombre(nombre);}
+
 
     //CREACION COMO PRUEBA
     public Pelicula createMovie(Pelicula pelicula) {

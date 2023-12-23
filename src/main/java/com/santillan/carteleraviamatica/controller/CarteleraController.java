@@ -74,6 +74,21 @@ public class CarteleraController {
     private Schema estadoSalaRequestSchema = SchemaLoader.load(new JSONObject(estadoSalaSchemaJson));
 
 
+    // Cargar el esquema JSON para /findMovieName
+    InputStream findMovieNameSchemaStream = getClass().getResourceAsStream("/estructura_json/findMovieNameRequestSchema.json");
+    String findMovieNameSchemaJson = null;
+
+    {
+        try {
+            findMovieNameSchemaJson = IOUtils.toString(findMovieNameSchemaStream, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace(); // Maneja la excepción
+        }
+    }
+
+    private Schema findMovieNameRequestSchema = SchemaLoader.load(new JSONObject(findMovieNameSchemaJson));
+
+
     //POST
 
     // Cargar el esquema JSON para /saveMovie
@@ -89,6 +104,25 @@ public class CarteleraController {
 
     private Schema saveMovieRequestSchema = SchemaLoader.load(new JSONObject(saveMovieSchemaJson));
 
+
+    //JWT
+    @GetMapping("/findMovieName")
+    public ResponseEntity<?> buscarPeliculaNombre(@RequestBody Pelicula pelicula) {
+        // Validar la solicitud para /findMovie
+        try {
+            findMovieNameRequestSchema.validate(new JSONObject("{\"nombre\":\"" + pelicula.getNombre() + "\" ,\"duracion\":" + pelicula.getDuracion() + "}"));
+        } catch (ValidationException e) {
+            return ResponseEntity.badRequest().body("La solicitud para /findMovieName no cumple con el esquema JSON: " + e.getMessage());
+        }
+
+        Pelicula peliculaf = peliculaService.findMovieByNombre(pelicula.getNombre());
+        if (peliculaf != null) {
+            return ResponseEntity.ok(peliculaf);
+        } else {
+            return ResponseEntity.badRequest().body("No se generaron resultados para su busqueda según el nombre");
+        }
+
+    }
 
 
 

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.santillan.carteleraviamatica.exceptions.ExceptionErrores;
 import com.santillan.carteleraviamatica.model.entitie.generics.RespuestaGeneral;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -35,7 +36,7 @@ public class GenericosService {
 //	PeliculaSalaCineRepository peliculasalacineRepository;
 
 
-	public RespuestaGeneral procesar(JSONObject jsonrequest) {
+	public RespuestaGeneral procesar(JSONObject jsonrequest) throws ExceptionErrores{
 		RespuestaGeneral respuesta = null;
 
 		if(jsonrequest.isNull("peticion")) {
@@ -62,25 +63,28 @@ public class GenericosService {
 		String casosPeticion = jsonrequest.getString("peticion");
 
 		//String respuesta = null;
-
+	try {
 		switch (casosPeticion) {
 			case "consultar":
 				String resultConsulta = consultar(peticionGeneral);
-				if (resultConsulta != null){
+				if (resultConsulta != null) {
 					respuesta = new RespuestaGeneral("200", "Solictud procesada");
 					respuesta.getData().put("data", resultConsulta);
-				}else{
+				} else {
 					respuesta = new RespuestaGeneral("500", "Hubo un error en la consulta");
 				}
 				break;
 			default:
 				respuesta = new RespuestaGeneral("400", "No se reconoce la peticion ingresada");
 		}
+	}catch (ExceptionErrores e){
+		throw new ExceptionErrores("1");
+	}
 
 		return respuesta;
 	}
 
-	private String consultar(PeticionGeneral peticion) {
+	private String consultar(PeticionGeneral peticion) throws ExceptionErrores {
 
 		String devolver = null;
 

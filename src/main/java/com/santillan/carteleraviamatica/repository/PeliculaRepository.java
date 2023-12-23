@@ -20,4 +20,6 @@ public interface PeliculaRepository extends JpaRepository<Pelicula, Integer> {
     //Se necesita buscar por el nombre de la sala de cine y presentar
     @Query(value = "SELECT p.* FROM pelicula p JOIN pelicula_salacine psc ON psc.id_pelicula = p.id_pelicula JOIN sala_cine s ON psc.id_sala = s.id_sala WHERE s.nombre = ?1 ", nativeQuery = true)
     List<Pelicula> finByNombreSala(String nombreSala);
+
+    Pelicula findByNombre(String nombre);
 }
